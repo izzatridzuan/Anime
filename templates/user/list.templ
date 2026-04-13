@@ -1,0 +1,73 @@
+package user
+
+import (
+    "fmt"
+    "github.com/unixadmin/anime/templates"
+    db "github.com/unixadmin/anime/internal/db"
+)
+
+templ List(users []db.User, search string, role string, flash string) {
+    @templates.Layout("Users", role, flash) {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Users</h1>
+            <a href="/users/new" class="btn btn-primary">+ Add User</a>
+        </div>
+        <form class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" 
+                    placeholder="Search by name or email" value={ search }/>
+                <button type="submit" class="btn btn-outline-secondary">Search</button>
+            </div>
+        </form>
+        <div id="resend-result"></div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Must Change Password</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="user-list">
+                for _, u := range users {
+                    <tr id={ fmt.Sprintf("user-%d", u.ID) }>
+                        <td>{ u.Name }</td>
+                        <td>{ u.Email }</td>
+                        <td>{ u.Role }</td>
+                        <td>
+                            if u.MustChangePassword {
+                                <span class="badge bg-warning">Yes</span>
+                            } else {
+                                <span class="badge bg-success">No</span>
+                            }
+                        </td>
+                        <td>
+                            <a href={ templ.SafeURL(fmt.Sprintf("/users/%d/edit", u.ID)) } class="btn btn-sm btn-warning me-1">Edit</a>
+                            if u.MustChangePassword {
+                                <button
+                                    class="btn btn-sm btn-info me-1"
+                                    hx-post={ fmt.Sprintf("/users/%d/resend-invite", u.ID) }
+                                    hx-confirm="Resend invite email to this user?"
+                                    hx-target="#resend-result"
+                                    hx-swap="innerHTML">
+                                    Resend Invite
+                                </button>
+                            }
+                            <button
+                                class="btn btn-sm btn-danger"
+                                hx-delete={ fmt.Sprintf("/users/%d", u.ID) }
+                                hx-target={ fmt.Sprintf("#user-%d", u.ID) }
+                                hx-swap="outerHTML"
+                                hx-confirm="Are you sure?">
+                                Delete
+                            </button>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

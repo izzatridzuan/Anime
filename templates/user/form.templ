@@ -1,0 +1,54 @@
+package user
+
+import (
+    "fmt"
+    "github.com/unixadmin/anime/templates"
+    db "github.com/unixadmin/anime/internal/db"
+)
+
+templ Form(u db.User, isEdit bool, role string) {
+    @templates.Layout(formTitle(isEdit), role, "") {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{ formTitle(isEdit) }</h1>
+            <a href="/users" class="btn btn-secondary">Back</a>
+        </div>
+        if isEdit {
+            <form hx-put={ fmt.Sprintf("/users/%d", u.ID) } hx-target="#form-result" hx-swap="innerHTML">
+                <div id="form-result"></div>
+                @userFields(u, isEdit)
+                <button type="submit" class="btn btn-primary">Update User</button>
+            </form>
+        } else {
+            <form hx-post="/users" hx-target="#form-result" hx-swap="innerHTML">
+                <div id="form-result"></div>
+                @userFields(u, isEdit)
+                <button type="submit" class="btn btn-primary">Create User</button>
+            </form>
+        }
+    }
+}
+
+templ userFields(u db.User, isEdit bool) {
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-control" value={ u.Name } required minlength="1" maxlength="200"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value={ u.Email } required/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+            <option value="user" selected?={ u.Role == "user" }>User</option>
+            <option value="admin" selected?={ u.Role == "admin" }>Admin</option>
+        </select>
+    </div>
+}
+
+func formTitle(isEdit bool) string {
+    if isEdit {
+        return "Edit User"
+    }
+    return "New User"
+}

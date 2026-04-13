@@ -1,0 +1,22 @@
+package studio
+
+import (
+    "github.com/unixadmin/anime/templates"
+)
+
+templ Form(role string) {
+    @templates.Layout("New Studio", role, "") {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>New Studio</h1>
+            <a href="/studios" class="btn btn-secondary">Back</a>
+        </div>
+        <form hx-post="/studios" hx-target="#form-result" hx-swap="innerHTML">
+            <div id="form-result"></div>
+            <div class="mb-3">
+                <label class="form-label">Studio Name</label>
+                <input type="text" name="name" class="form-control" required minlength="1" maxlength="200"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    }
+}

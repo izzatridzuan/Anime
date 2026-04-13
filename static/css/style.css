@@ -1,0 +1,11 @@
+.anime-thumbnail {
+    height: 60px;
+    width: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.no-value {
+    color: #6c757d;
+    font-style: italic;
+}

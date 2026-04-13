@@ -1,0 +1,50 @@
+package anime
+
+import (
+    "fmt"
+    "strings"
+    "github.com/unixadmin/anime/models"
+)
+
+templ Row(a models.AnimeWithStudios) {
+    <tr id={ fmt.Sprintf("anime-%d", a.Anime.ID) }>
+        <td>
+            if a.Anime.ImageUrl != "" {
+                <img src={ a.Anime.ImageUrl } alt={ a.Anime.Title } class="anime-thumbnail"/>
+            } else {
+                <span class="no-value">No image</span>
+            }
+        </td>
+        <td>{ a.Anime.Title }</td>
+        <td>{ a.Anime.Genre }</td>
+        <td>{ fmt.Sprintf("%d", a.Anime.Episodes) }</td>
+        <td>{ a.Anime.Status }</td>
+        <td>
+            if a.Anime.ReleaseDate.Valid {
+                { a.Anime.ReleaseDate.Time.Format("02 Jan 2006") }
+            } else {
+                <span class="no-value">-</span>
+            }
+        </td>
+        <td>{ studioNames(a) }</td>
+        <td>
+            <a href={ templ.SafeURL(fmt.Sprintf("/anime/%d/edit", a.Anime.ID)) } class="btn btn-sm btn-warning">Edit</a>
+            <button
+                class="btn btn-sm btn-danger"
+                hx-delete={ fmt.Sprintf("/anime/%d", a.Anime.ID) }
+                hx-target={ fmt.Sprintf("#anime-%d", a.Anime.ID) }
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure?">
+                Delete
+            </button>
+        </td>
+    </tr>
+}
+
+func studioNames(a models.AnimeWithStudios) string {
+    names := make([]string, len(a.Studios))
+    for i, s := range a.Studios {
+        names[i] = s.Name
+    }
+    return strings.Join(names, ", ")
+}

@@ -1,0 +1,20 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries:
+      - "db/queries/anime.sql"
+      - "db/queries/studio.sql"
+      - "db/queries/user.sql"
+      - "db/queries/audit.sql"
+    schema:
+      - "db/migrations/001_initial.sql"
+      - "db/migrations/002_add_image_url.sql"
+      - "db/migrations/003_add_release_date.sql"
+      - "db/migrations/004_create_users.sql"
+      - "db/migrations/005_soft_delete.sql"
+      - "db/migrations/006_create_audit_logs.sql"
+    gen:
+      go:
+        package: "db"
+        out: "internal/db"
+        sql_package: "pgx/v5"

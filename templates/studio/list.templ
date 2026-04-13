@@ -1,0 +1,41 @@
+package studio
+
+import (
+    "fmt"
+    "github.com/unixadmin/anime/templates"
+    db "github.com/unixadmin/anime/internal/db"
+)
+
+templ List(studios []db.Studio, role string, flash string) {
+    @templates.Layout("Studios", role, flash) {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Studios</h1>
+            <a href="/studios/new" class="btn btn-primary">+ Add Studio</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="studio-list">
+                for _, s := range studios {
+                    <tr id={ fmt.Sprintf("studio-%d", s.ID) }>
+                        <td>{ s.Name }</td>
+                        <td>
+                            <button
+                                class="btn btn-sm btn-danger"
+                                hx-delete={ fmt.Sprintf("/studios/%d", s.ID) }
+                                hx-target={ fmt.Sprintf("#studio-%d", s.ID) }
+                                hx-swap="outerHTML"
+                                hx-confirm="Are you sure?">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

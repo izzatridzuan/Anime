@@ -1,0 +1,49 @@
+package profile
+
+import (
+    "github.com/unixadmin/anime/templates"
+    db "github.com/unixadmin/anime/internal/db"
+)
+
+templ Profile(u db.User, role string) {
+    @templates.Layout("Profile", role, "") {
+        <h1 class="mb-4">Profile</h1>
+
+        <div class="card mb-4">
+            <div class="card-header">Update Name</div>
+            <div class="card-body">
+                <form hx-post="/profile/name" hx-target="#name-result" hx-swap="innerHTML">
+                    <div id="name-result"></div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="name" class="form-control" value={ u.Name } required minlength="1" maxlength="200"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Name</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Change Password</div>
+            <div class="card-body">
+                <form hx-post="/profile/password" hx-target="#password-result" hx-swap="innerHTML">
+                    <div id="password-result"></div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="current_password" class="form-control" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="password" class="form-control" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="form-control" required/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+        </div>
+    }
+}
+
