@@ -19,6 +19,7 @@ templ Layout(title string, role string, flash string) {
                     <a class="btn btn-outline-light btn-sm me-2" href="/studios">Studios</a>
                     if role == "admin" {
                         <a class="btn btn-outline-light btn-sm me-2" href="/users">Users</a>
+                        <a class="btn btn-outline-light btn-sm me-2" href="/service-accounts">Service Accounts</a>
                         <a class="btn btn-outline-light btn-sm me-2" href="/audit-log">Audit Log</a>
                     }
                     <a class="btn btn-outline-light btn-sm me-2" href="/profile">Profile</a>

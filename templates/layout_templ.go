@@ -47,7 +47,7 @@ func Layout(title string, role string, flash string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if role == "admin" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a class=\"btn btn-outline-light btn-sm me-2\" href=\"/users\">Users</a> <a class=\"btn btn-outline-light btn-sm me-2\" href=\"/audit-log\">Audit Log</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a class=\"btn btn-outline-light btn-sm me-2\" href=\"/users\">Users</a> <a class=\"btn btn-outline-light btn-sm me-2\" href=\"/service-accounts\">Service Accounts</a> <a class=\"btn btn-outline-light btn-sm me-2\" href=\"/audit-log\">Audit Log</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

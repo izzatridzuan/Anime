@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -20,6 +21,7 @@ func NewStudioHandler(queries *db.Queries) *StudioHandler {
 func (h *StudioHandler) List(w http.ResponseWriter, r *http.Request) {
 	studios, err := h.queries.ListStudios(r.Context())
 	if err != nil {
+		slog.Error("failed to list studios", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -49,6 +51,7 @@ func (h *StudioHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	err := h.queries.ArchiveStudio(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("failed to archive studio", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

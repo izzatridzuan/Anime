@@ -6,6 +6,7 @@ sql:
       - "db/queries/studio.sql"
       - "db/queries/user.sql"
       - "db/queries/audit.sql"
+      - "db/queries/service_account.sql"
     schema:
       - "db/migrations/001_initial.sql"
       - "db/migrations/002_add_image_url.sql"
@@ -13,6 +14,7 @@ sql:
       - "db/migrations/004_create_users.sql"
       - "db/migrations/005_soft_delete.sql"
       - "db/migrations/006_create_audit_logs.sql"
+      - "db/migrations/007_create_service_accounts.sql"
     gen:
       go:
         package: "db"

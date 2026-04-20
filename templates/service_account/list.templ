@@ -1,0 +1,43 @@
+package service_account
+
+import (
+    "fmt"
+    "github.com/unixadmin/anime/templates"
+    db "github.com/unixadmin/anime/internal/db"
+)
+
+templ List(accounts []db.ServiceAccount, role string, flash string) {
+    @templates.Layout("Service Accounts", role, flash) {
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Service Accounts</h1>
+            <a href="/service-accounts/new" class="btn btn-primary">+ Add Service Account</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                for _, a := range accounts {
+                    <tr id={ fmt.Sprintf("sa-%d", a.ID) }>
+                        <td>{ a.Name }</td>
+                        <td>{ a.CreatedAt.Time.Format("2006-01-02 15:04:05") }</td>
+                        <td>
+                            <button
+                                class="btn btn-sm btn-danger"
+                                hx-delete={ fmt.Sprintf("/service-accounts/%d", a.ID) }
+                                hx-confirm="Are you sure? This will break any app using this key."
+                                hx-target="this"
+                                hx-swap="none">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

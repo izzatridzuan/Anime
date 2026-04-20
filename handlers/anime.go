@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,7 @@ func NewAnimeHandler(queries *db.Queries) *AnimeHandler {
 func (h *AnimeHandler) List(w http.ResponseWriter, r *http.Request) {
 	animes, err := h.queries.ListAnime(r.Context())
 	if err != nil {
+		slog.Error("failed to list anime", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -29,6 +31,7 @@ func (h *AnimeHandler) List(w http.ResponseWriter, r *http.Request) {
 	for i, a := range animes {
 		studios, err := h.queries.GetStudiosByAnime(r.Context(), a.ID)
 		if err != nil {
+			slog.Error("failed to get studios for anime", "error", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -40,6 +43,7 @@ func (h *AnimeHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *AnimeHandler) New(w http.ResponseWriter, r *http.Request) {
 	studios, err := h.queries.ListStudios(r.Context())
 	if err != nil {
+		slog.Error("failed to list studios for form", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -109,16 +113,19 @@ func (h *AnimeHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	anime, err := h.queries.GetAnime(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("anime not found", "error", err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	studios, err := h.queries.ListStudios(r.Context())
 	if err != nil {
+		slog.Error("failed to list studios for edit", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	assigned, err := h.queries.GetStudiosByAnime(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("failed to get assigned studios", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -201,6 +208,7 @@ func (h *AnimeHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	err := h.queries.ArchiveAnime(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("failed to archive anime", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -31,6 +32,7 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 		users, err = h.queries.ListUsers(r.Context())
 	}
 	if err != nil {
+		slog.Error("failed to list users", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -45,6 +47,7 @@ func (h *UserHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	user, err := h.queries.GetUserByID(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("user not found on edit", "error", err)
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
@@ -118,6 +121,7 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	err := h.queries.DeleteUser(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("failed to delete user", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -130,12 +134,14 @@ func (h *UserHandler) ResendInvite(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.PathValue("id"))
 	user, err := h.queries.GetUserByID(r.Context(), int32(id))
 	if err != nil {
+		slog.Error("user not found on resend", "error", err)
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
 	password := generatePassword()
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		slog.Error("failed to reset password", "error", err)
 		http.Error(w, "Failed to reset password", http.StatusInternalServerError)
 		return
 	}
@@ -144,6 +150,7 @@ func (h *UserHandler) ResendInvite(w http.ResponseWriter, r *http.Request) {
 		PasswordHash: string(hash),
 	})
 	if err != nil {
+		slog.Error("failed to send invite email", "error", err)
 		http.Error(w, "Failed to reset password", http.StatusInternalServerError)
 		return
 	}

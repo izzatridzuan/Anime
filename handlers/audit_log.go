@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/unixadmin/anime/internal/db"
@@ -18,6 +19,7 @@ func NewAuditLogHandler(queries *db.Queries) *AuditLogHandler {
 func (h *AuditLogHandler) List(w http.ResponseWriter, r *http.Request) {
 	logs, err := h.queries.ListAuditLogs(r.Context())
 	if err != nil {
+		slog.Error("failed to list audit logs", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

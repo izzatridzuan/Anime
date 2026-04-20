@@ -12,6 +12,7 @@ import (
 	_ "github.com/unixadmin/anime/docs"
 	"github.com/unixadmin/anime/handlers"
 	"github.com/unixadmin/anime/internal/db"
+	"github.com/unixadmin/anime/logger"
 )
 
 // @title           Anime Backoffice API
@@ -24,7 +25,9 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
+	if err := logger.Init(); err != nil {
+		log.Fatal("failed to init logger:", err)
+	}
 	handlers.InitSessionStore()
 
 	ctx := context.Background()
@@ -42,6 +45,7 @@ func main() {
 	userHandler := handlers.NewUserHandler(queries)
 	profileHandler := handlers.NewProfileHandler(queries)
 	auditLogHandler := handlers.NewAuditLogHandler(queries)
+	serviceAccountHandler := handlers.NewServiceAccountHandler(queries)
 	mux := http.NewServeMux()
 
 	// Auth routes
@@ -86,7 +90,13 @@ func main() {
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// API routes
-	mux.HandleFunc("GET /api/anime", animeHandler.APIList)
+	mux.HandleFunc("GET /api/anime", handlers.RequireAPIKey(queries)(animeHandler.APIList))
+
+	// Service Account
+	mux.HandleFunc("GET /service-accounts", handlers.RequireAdmin(serviceAccountHandler.List))
+	mux.HandleFunc("GET /service-accounts/new", handlers.RequireAdmin(serviceAccountHandler.New))
+	mux.HandleFunc("POST /service-accounts", handlers.RequireAdmin(serviceAccountHandler.Create))
+	mux.HandleFunc("DELETE /service-accounts/{id}", handlers.RequireAdmin(serviceAccountHandler.Delete))
 
 	// Swagger UI
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)

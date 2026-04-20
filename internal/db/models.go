@@ -34,6 +34,13 @@ type AuditLog struct {
 	CreatedAt  pgtype.Timestamptz
 }
 
+type ServiceAccount struct {
+	ID         int32
+	Name       string
+	ApiKeyHash string
+	CreatedAt  pgtype.Timestamptz
+}
+
 type Studio struct {
 	ID        int32
 	Name      string

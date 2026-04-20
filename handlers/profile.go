@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/unixadmin/anime/internal/db"
@@ -21,6 +22,7 @@ func (h *ProfileHandler) Page(w http.ResponseWriter, r *http.Request) {
 	userID := getSessionUserID(r)
 	user, err := h.queries.GetUserByID(r.Context(), int32(userID))
 	if err != nil {
+		slog.Error("user not found on profile page", "error", err)
 		http.Error(w, "User not found", http.StatusNotFound)
 		return
 	}
@@ -32,7 +34,7 @@ func (h *ProfileHandler) UpdateName(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 
 	if name == "" {
-		templates.AlertError("NAme cannot be empty").Render(r.Context(), w)
+		templates.AlertError("Name cannot be empty").Render(r.Context(), w)
 		return
 	}
 
